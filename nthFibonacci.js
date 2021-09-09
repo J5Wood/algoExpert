@@ -7,3 +7,10 @@ function getNthFib(n) {
 	}
 	return fibNums[n - 1]
 }
+
+function getNthFibRecursive(n, fibArr = [undefined,0,1,1]) {
+	if(fibArr[n] !== undefined) return fibArr[n];
+	let value = getNthFib(n - 1, fibArr) + getNthFib(n - 2, fibArr);
+	fibArr[n] = value;
+	return value;
+}
