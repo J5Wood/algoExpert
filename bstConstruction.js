@@ -50,9 +50,14 @@ class BST {
         let returnNode = null
 
         // if no more current node, value not found, return null
+
+        // prev node tracks node before return node to remove branch once found
+        // will have to re set branches coming from return node later
+
+
         while(currentNode){
             if(currentNode.value === value){
-            
+                
                 // return node found
                 returnNode = currentNode
 
@@ -60,6 +65,9 @@ class BST {
                 // find node for swapping
                 // check right tree left side first
                 // if no right tree, check left tree right side
+                // once no more next nodes on a path, replacement found
+                // set currentNode to found replacement
+                // track "prev branch", node and cdirection so you can remove it's connection to replacement node
 
                 if(returnNode.right){
                     prevBranch = currentNode
@@ -72,15 +80,23 @@ class BST {
                         currentNode = currentNode.left
                     }
 
+                    // set prev branch legs to null if replacement has no legs,
                     // if replacement node has right branch, set prev nodes next to that
-                    if(currentNode.right){
-                        if(prevBranchDir === "left"){
+                    if(prevBranchDir === "left"){
+                        if(currentNode.right){
                             prevBranch.left = currentNode.right
                         } else {
+                            prevBranch.left = null
+                        }
+                    } else {
+                        if(currentNode.right){
                             prevBranch.right = currentNode.right
+                        } else {
+                            prevBranch.right = null
                         }
                     }
-
+                
+                    // ****** Not re-setting nodes correctly in middle of tree ******
                     // now that replacement is found
                     // set previous node's value to swapped node
                     if(prevNode){
@@ -105,11 +121,17 @@ class BST {
                     }
 
                     // if replacement node has left branch, set prev nodes next to that
-                    if(currentNode.left){
-                        if(prevBranchDir === "right"){
+                    if(prevBranchDir === "right"){
+                        if(currentNode.left){
                             prevBranch.right = currentNode.left
                         } else {
+                            prevBranch.right = null
+                        }
+                    } else {
+                        if(currentNode.left){
                             prevBranch.left = currentNode.left
+                        } else {
+                            prevBranch.left = null
                         }
                     }
 
@@ -125,12 +147,10 @@ class BST {
                     }
                 }
 
-                // set swap nodes nexts to returns
-                currentNode.right = returnNode.right
-                currentNode.left = returnNode.left
-                returnNode.left = null
-                returnNode.right = null
-            
+                // set this value to replacement value, null currentNode to exit
+                this.value = currentNode.value
+                currentNode = null
+
             } else if(value > currentNode.value){
                 prevNode = currentNode
                 prevDir = "right"
@@ -142,9 +162,8 @@ class BST {
             }
         }
         
-        //getting null for currentNode and this is still 10
 
-        return returnNode
+        return this
         // check next nodes, move left node up first, then right
           // continue until value found or nothing
           //if nothing found return null
@@ -167,4 +186,4 @@ console.log(tree.contains(15))
 console.log(tree.contains(7))
 console.log(tree.contains(12))
 
-tree.remove(10)
+console.log(tree.remove(13))
