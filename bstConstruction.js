@@ -58,12 +58,15 @@ class BST {
 
         while(currentNode){
             if(currentNode.value === value){
-                debugger
                 // return node found
                 returnNode = currentNode
 
 
                 // ***** account for last node in tree
+
+                if(!parentNode && !currentNode.right && !currentNode.left){
+                    returnNode
+                }
 
 
                 if(currentNode.right){
@@ -81,8 +84,15 @@ class BST {
                         }
                     }
 
-                    // if replacement parent node is return node figure something out
+                    // ***** if replacement parent node is return node figure something out
+
                     debugger
+
+                    if(replacementParentNodeDir === "left"){
+                        replacementParentNode.left = null
+                    } else {
+                        replacementParentNode.right = null
+                    }
                     replacementNode = currentNode
 
 
@@ -101,7 +111,11 @@ class BST {
                             currentNode = currentNode.left
                         }
                     }
-                    debugger
+                    if(replacementParentNodeDir === "left"){
+                        replacementParentNode.left = null
+                    } else {
+                        replacementParentNode.right = null
+                    }
                     replacementNode = currentNode
                     
                 } else {
@@ -109,132 +123,33 @@ class BST {
                 }
 
 
-
-                // if you find the right node, what do you need?
-                    // replacement node
-                        // traverse tree all the way down looking for replacement
-                            // if right leg, move right
-                                // while there is a child
-                                // move left if you can or move right
-                                // track prev dir and node
-                                // once no more children replacement node found.
-                                    // remove link pointing to replacement node
-                            // otherwise move left
-                                // while there is a child
-                                //move right if you can, otherwise move left
-                                // track prev dir and node
-                                // once no more children replacement node found
-                                    // remove link to replacement node
-                            // if no children, no replacement node needed
-                        // right leg first, moving left to right
-                        // then left leg moving right to left
-                    // replacement parent node
-                    // direction replacement parent leg is pointing
+                // now you have your replacement node, ties to it cut
                 
-                // once replacement noed is found, and original tie to it is cut, what do you do?
-                    // set return node parent to point to replacement node
-                    // set replacement node legs to point to return node legs
-                    // clear return node legs
 
-                    //return return node
+                // ***** account for no replacement node
 
+                if(parentNode){
+                    if(parentNodeDir === 'left'){
+                        parentNode.left = replacementNode
+                    } else {
+                        parentNode.right = replacementNode
+                    }
+                replacementNode.left = returnNode.left
+                replacementNode.right = returnNode.right
+                returnNode.left = null
+                returnNode.right = null
 
+                return returnNode
 
-
-
-
-
-
-
-
-                // find node for swapping
-                // check right tree left side first
-                // if no right tree, check left tree right side
-                // once no more next nodes on a path, replacement found
-                // set currentNode to found replacement
-                // track "prev branch", node and cdirection so you can remove it's connection to replacement node
-
-                // if(returnNode.right){
-                //     prevBranch = currentNode
-                //     prevBranchDir = "right"
-                //     currentNode = returnNode.right
-                    
-                //     while(currentNode.left){
-                //         prevBranch = currentNode
-                //         prevBranchDir = "left"
-                //         currentNode = currentNode.left
-                //     }
-
-                //     // set prev branch legs to null if replacement has no legs,
-                //     // if replacement node has right branch, set prev nodes next to that
-                //     if(prevBranchDir === "left"){
-                //         if(currentNode.right){
-                //             prevBranch.left = currentNode.right
-                //         } else {
-                //             prevBranch.left = null
-                //         }
-                //     } else {
-                //         if(currentNode.right){
-                //             prevBranch.right = currentNode.right
-                //         } else {
-                //             prevBranch.right = null
-                //         }
-                //     }
-                
-                //     // ****** Not re-setting nodes correctly in middle of tree ******
-                //     // now that replacement is found
-                //     // set previous node's value to swapped node
-                //     if(prevNode){
-                //         if(prevDir === "right"){
-                //             prevNode.right = currentNode
-                //         } else{
-                //             prevNode.left = currentNode
-                //         }
-                //     }
-                    
+                } else {
 
 
-                // } else if( returnNode.left){
-                //     prevBranch = currentNode
-                //     prevBranchDir = "left"
-                //     currentNode = returnNode.left
-
-                //     while(currentNode.right){
-                //         prevBranch = currentNode
-                //         prevBranchDir = "right"
-                //         currentNode = currentNode.right
-                //     }
-
-                //     // if replacement node has left branch, set prev nodes next to that
-                //     if(prevBranchDir === "right"){
-                //         if(currentNode.left){
-                //             prevBranch.right = currentNode.left
-                //         } else {
-                //             prevBranch.right = null
-                //         }
-                //     } else {
-                //         if(currentNode.left){
-                //             prevBranch.left = currentNode.left
-                //         } else {
-                //             prevBranch.left = null
-                //         }
-                //     }
-
-
-                //      // now that replacement is found
-                //     // set previous node's value to swapped node
-                //     if(prevNode){
-                //         if(prevDir === "right"){
-                //             prevNode.right = currentNode
-                //         } else{
-                //             prevNode.left = currentNode
-                //         }
-                //     }
-                // }
-
-                // // set this value to replacement value, null currentNode to exit
-                // this.value = currentNode.value
-                // currentNode = null
+                    // ***** Don't like this, changing values instead of moving nodes around properly. 
+                    // ***** Couldn't think of a way to do this, tree variable would be pointing to return node, not replacement node that now points to tree.
+                    // ***** Ideally, maybe make tree its own structure that holds individual nodes? Easy to reset head that way
+                    [replacementNode.value, this.value] = [this.value, replacementNode.value]
+                    return replacementNode
+                }
 
             } else if(value > currentNode.value){
                 parentNode = currentNode
@@ -247,11 +162,7 @@ class BST {
             }
         }
         
-        return undefined
-
-        // check next nodes, move left node up first, then right
-          // continue until value found or nothing
-          //if nothing found return null
+        return tree
     }
 }
 
@@ -272,3 +183,7 @@ console.log(tree.contains(7))
 console.log(tree.contains(12))
 
 console.log(tree.remove(10))
+console.log(tree)
+console.log(tree.remove(13))
+console.log(tree.remove(2))
+console.log(tree)
